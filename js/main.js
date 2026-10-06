@@ -1,0 +1,196 @@
+/* Al-Hamza Caterers — shared interactions */
+(function () {
+  "use strict";
+  var WA_NUMBER = "919818776891";
+  var WA_DEFAULT = "Hello Al-Hamza Caterers, I would like to enquire about catering for my event.";
+
+  function waLink(message) {
+    return "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(message || WA_DEFAULT);
+  }
+
+  // Expose for inline use
+  window.ALHAMZA_WA = waLink;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var header = document.querySelector(".site-header");
+    var onScroll = function () {
+      if (!header) return;
+      if (window.scrollY > 40) header.classList.add("scrolled");
+      else header.classList.remove("scrolled");
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    // Mobile drawer
+    var drawer = document.getElementById("drawer");
+    var openBtns = document.querySelectorAll("[data-open-drawer]");
+    var closeBtns = document.querySelectorAll("[data-close-drawer]");
+    function openDrawer() {
+      if (!drawer) return;
+      drawer.classList.add("open");
+      drawer.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      var first = drawer.querySelector("a,button");
+      if (first) first.focus({ preventScroll: true });
+    }
+    function closeDrawer() {
+      if (!drawer) return;
+      drawer.classList.remove("open");
+      drawer.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+    openBtns.forEach(function (b) { b.addEventListener("click", openDrawer); });
+    closeBtns.forEach(function (b) { b.addEventListener("click", closeDrawer); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") { closeDrawer(); closeLightbox(); }
+    });
+
+    // Reveal on scroll
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var els = document.querySelectorAll(".reveal");
+    if (reduced || !("IntersectionObserver" in window)) {
+      els.forEach(function (el) { el.classList.add("in"); });
+    } else {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+        });
+      }, { threshold: 0.12 });
+      els.forEach(function (el) { io.observe(el); });
+    }
+
+    // Wire generic WhatsApp buttons with data-wa attribute
+    document.querySelectorAll("[data-wa]").forEach(function (a) {
+      var msg = a.getAttribute("data-wa-message") || WA_DEFAULT;
+      if (!a.getAttribute("href") || a.getAttribute("href") === "#") {
+        a.setAttribute("href", waLink(msg));
+        a.setAttribute("target", "_blank");
+        a.setAttribute("rel", "noopener");
+      }
+    });
+
+    // Gallery filter
+    var filterBtns = document.querySelectorAll(".filter-btn");
+    var gItems = document.querySelectorAll(".g-item");
+    filterBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        filterBtns.forEach(function (b) { b.classList.remove("active"); b.setAttribute("aria-selected", "false"); });
+        btn.classList.add("active");
+        btn.setAttribute("aria-selected", "true");
+        var f = btn.getAttribute("data-filter");
+        gItems.forEach(function (item) {
+          var show = f === "all" || item.getAttribute("data-cat") === f;
+          item.style.display = show ? "" : "none";
+        });
+      });
+    });
+
+    // Lightbox
+    var lb = document.getElementById("lightbox");
+    var lbImg = lb ? lb.querySelector("img") : null;
+    var lbCount = lb ? lb.querySelector(".lb-count") : null;
+    var visibleItems = function () {
+      return Array.prototype.filter.call(gItems, function (i) { return i.style.display !== "none"; });
+    };
+    var idx = 0;
+    function openLightbox(i) {
+      if (!lb || !lbImg) return;
+      var list = visibleItems();
+      if (!list.length) return;
+      idx = (i + list.length) % list.length;
+      var img = list[idx].querySelector("img");
+      lbImg.src = img.src;
+      lbImg.alt = img.alt;
+      if (lbCount) lbCount.textContent = (idx + 1) + " / " + list.length;
+      lb.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+    function closeLightbox() {
+      if (!lb) return;
+      lb.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+    window.__closeLightbox = closeLightbox;
+    gItems.forEach(function (item) {
+      item.addEventListener("click", function () {
+        openLightbox(visibleItems().indexOf(item));
+      });
+      item.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightbox(visibleItems().indexOf(item)); }
+      });
+    });
+    function closeLightboxSafe() { closeLightbox(); }
+    window.closeLightbox = closeLightboxSafe;
+    if (lb) {
+      lb.querySelector("[data-lb-close]").addEventListener("click", closeLightbox);
+      lb.querySelector("[data-lb-prev]").addEventListener("click", function (e) { e.stopPropagation(); openLightbox(idx - 1); });
+      lb.querySelector("[data-lb-next]").addEventListener("click", function (e) { e.stopPropagation(); openLightbox(idx + 1); });
+      lb.addEventListener("click", function (e) { if (e.target === lb) closeLightbox(); });
+    }
+
+    // Enquiry form -> WhatsApp
+    var form = document.getElementById("enquiryForm");
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var get = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ""; };
+        var fields = [
+          { id: "fName", test: function (v) { return v.length >= 2; }, msg: "Please enter your name." },
+          { id: "fPhone", test: function (v) { return /^[+\d][\d\s-]{7,15}$/.test(v); }, msg: "Please enter a valid phone number." },
+          { id: "fEvent", test: function (v) { return v.length > 0; }, msg: "Please select an event type." },
+          { id: "fDate", test: function (v) { return v.length > 0; }, msg: "Please choose an event date." },
+          { id: "fGuests", test: function (v) { return v.length > 0; }, msg: "Please select guest count." }
+        ];
+        var ok = true, firstBad = null;
+        fields.forEach(function (f) {
+          var wrap = document.getElementById(f.id + "Wrap");
+          var val = get(f.id);
+          var valid = f.test(val);
+          if (wrap) {
+            wrap.classList.toggle("invalid", !valid);
+            var err = wrap.querySelector(".err");
+            if (err && !valid) err.textContent = f.msg;
+          }
+          if (!valid) { ok = false; if (!firstBad) firstBad = document.getElementById(f.id); }
+        });
+        if (!ok) { if (firstBad) firstBad.focus(); return; }
+
+        var lines = [
+          "Hello Al-Hamza Caterers,",
+          "",
+          "I would like to enquire about catering.",
+          "",
+          "Name: " + get("fName"),
+          "Phone: " + get("fPhone"),
+          "Event: " + get("fEvent"),
+          "Date: " + get("fDate"),
+          "Guests: " + get("fGuests"),
+          "Location: " + (get("fLocation") || "-"),
+          "",
+          "Requirement:",
+          get("fMessage") || "-",
+          "",
+          "Please share the catering options and quotation."
+        ];
+        window.open(waLink(lines.join("\n")), "_blank", "noopener");
+        var done = document.getElementById("formNote");
+        if (done) {
+          done.hidden = false;
+          done.textContent = "Thank you, " + get("fName") + ". WhatsApp should now open with your enquiry — just press send. We will respond shortly.";
+          done.focus();
+        }
+      });
+      // live clear
+      form.querySelectorAll("input,select,textarea").forEach(function (el) {
+        el.addEventListener("input", function () {
+          var wrap = el.closest(".field");
+          if (wrap) wrap.classList.remove("invalid");
+        });
+      });
+    }
+
+    // Footer year
+    var y = document.getElementById("year");
+    if (y) y.textContent = new Date().getFullYear();
+  });
+})();
