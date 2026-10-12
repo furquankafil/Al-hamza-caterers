@@ -118,11 +118,8 @@ h1,h2,h3{font-family:var(--font-serif);line-height:1.08;font-weight:600;color:va
 }
 .brand-mark img{width:100%;height:100%;object-fit:cover}
 .site-header.scrolled .brand-mark{width:46px;height:46px;flex-basis:46px}
-.brand-text{line-height:1.15}
-.brand-text strong{font-family:var(--font-serif);font-size:1.18rem;letter-spacing:.02em;display:block;color:#fff;transition:color .3s}
-.brand-text span{font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-soft);transition:color .3s}
-.site-header.scrolled .brand-text strong{color:var(--charcoal)}
-.site-header.scrolled .brand-text span{color:var(--gold-deep)}
+.brand-text{line-height:1.1;display:flex;align-items:center;min-width:0}
+/* (Oct 2026) Brand name is a single unbreakable unit — see .brand-name rules below */
 .nav-desktop{display:none;align-items:center;gap:1.7rem}
 @media(min-width:1020px){.nav-desktop{display:flex}}
 .nav-desktop a{
@@ -194,6 +191,7 @@ h1,h2,h3{font-family:var(--font-serif);line-height:1.08;font-weight:600;color:va
 .page-hero img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
 .page-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,6,3,.55),rgba(8,6,3,.82))}
 .page-hero .wrap{position:relative;z-index:2}
+.page-hero h1{color:#fff}
 
 /* ---------- Cards ---------- */
 .card{
@@ -312,7 +310,6 @@ footer a:hover{color:#fff}
 .social-btn:hover{background:var(--gold);border-color:var(--gold);transform:translateY(-2px)}
 .f-bottom{border-top:1px solid rgba(255,255,255,.12);margin-top:3rem;padding:1.3rem 0 7.5rem;display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;font-size:.82rem;color:#9b917d}
 @media(min-width:900px){.f-bottom{padding-bottom:2rem}}
-.demo-credit{font-size:.75rem;letter-spacing:.08em;opacity:.7}
 
 /* Floating WhatsApp + mobile bar */
 .wa-float{
@@ -356,3 +353,163 @@ body.has-mobile-bar main{padding-bottom:0}
 .map-frame iframe{width:100%;height:340px;border:0;display:block}
 .skip-link{position:absolute;left:-9999px;top:0;background:var(--gold);color:#fff;padding:.7rem 1rem;z-index:200}
 .skip-link:focus{left:0}
+
+/* ---------- Founder ---------- */
+.founder-sec .founder-role{font-size:.78rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-deep);margin:.4rem 0 0}
+.founder-photo{border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow-md);background:#fff}
+.founder-photo img{width:100%;height:100%;object-fit:cover;object-position:top center;aspect-ratio:4/4.8}
+/* ---------- Video gallery ---------- */
+.v-grid{display:grid;gap:1rem;grid-template-columns:repeat(2,1fr)}
+@media(min-width:760px){.v-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1100px){.v-grid{grid-template-columns:repeat(4,1fr)}}
+.v-grid-3{grid-template-columns:1fr}
+@media(min-width:760px){.v-grid-3{grid-template-columns:repeat(3,1fr)}}
+.v-card{background:#fff;border:1px solid var(--line-soft);border-radius:12px;overflow:hidden;cursor:pointer;padding:0;font:inherit;color:inherit;text-align:left;transition:transform .35s ease,box-shadow .35s ease;display:flex;flex-direction:column}
+.v-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-md)}
+.v-thumb{position:relative;display:block;aspect-ratio:4/4.4;overflow:hidden;background:#14100a}
+.v-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.v-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;background:rgba(193,154,61,.94);box-shadow:0 10px 30px rgba(0,0,0,.4);transition:transform .3s}
+.v-play::after{content:"";position:absolute;top:50%;left:54%;transform:translate(-50%,-50%);border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent}
+.v-card:hover .v-play{transform:translate(-50%,-50%) scale(1.1)}
+.v-cap{display:block;padding:.8rem 1rem;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:#5b5347}
+a.v-card{text-decoration:none}
+.video-modal{position:fixed;inset:0;z-index:110;background:rgba(8,6,3,.93);display:none;align-items:center;justify-content:center;padding:1.2rem;backdrop-filter:blur(8px)}
+.video-modal.open{display:flex}
+.vm-box{position:relative;width:min(900px,94vw)}
+.vm-box video{width:100%;max-height:76vh;border-radius:12px;background:#000;border:1px solid rgba(255,255,255,.2)}
+.vm-cap{color:rgba(255,255,255,.85);font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;text-align:center;margin:.8rem 0 0}
+/* ---------- Guest feedback panel ---------- */
+.guest-panel{border-style:solid}
+/* ---------- Footer email ---------- */
+.f-bottom a{color:#C9BFA9}
+.f-bottom a:hover{color:#fff}
+footer .f-links a[href^="mailto:"]{color:#E8CF8F;word-break:break-all}
+
+/* ---------- Social (Follow Al-Hamza Caterers) ---------- */
+.follow-h{font-family:var(--font-sans);font-size:.76rem;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-soft);margin:0 0 .9rem}
+.social-row .social-btn{color:#E8CF8F}
+.social-row .social-btn svg{width:20px;height:20px;fill:currentColor;display:block}
+.social-row .social-btn:hover{color:#fff}
+.social-row .social-btn:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.ig-handles{margin:.8rem 0 0;font-size:.82rem;color:#9b917d}
+.ig-handles a{color:#E8CF8F;text-decoration:none;border-bottom:1px dotted rgba(232,207,143,.5)}
+.ig-handles a:hover{color:#fff;border-bottom-color:#fff}
+.f-note{flex-basis:100%;font-size:.78rem;color:#8d8471}
+.contact-social{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-sm);padding:clamp(1.4rem,3.5vw,2rem);margin-top:1.5rem}
+.contact-social h3{font-size:1.5rem;margin:0 0 .3rem;color:var(--charcoal)}
+.contact-social>p{color:#6b6257;margin:.2rem 0 1.2rem;font-size:.95rem}
+.cs-grid{display:grid;gap:.8rem}
+@media(min-width:560px){.cs-grid{grid-template-columns:1fr 1fr}}
+.cs-item{display:flex;align-items:center;gap:.9rem;text-decoration:none;border:1px solid var(--line-soft);border-radius:12px;padding:.85rem 1rem;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease;background:var(--ivory)}
+.cs-item:hover{transform:translateY(-3px);box-shadow:var(--shadow-sm);border-color:var(--line)}
+.cs-item .cs-ic{flex:0 0 44px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--charcoal);color:#F3E8CC}
+.cs-item .cs-ic svg{width:21px;height:21px;fill:currentColor}
+.cs-item b{display:block;font-family:var(--font-serif);font-size:1.12rem;color:var(--charcoal);line-height:1.2}
+.cs-item small{color:#8a8172;font-size:.82rem;word-break:break-all}
+.illus-duo{display:grid;gap:1rem;margin-top:2rem}
+@media(min-width:760px){.illus-duo{grid-template-columns:1fr 1fr}}
+.illus-duo figure{margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--line-soft);background:#fff;box-shadow:0 8px 28px rgba(22,19,14,.06)}
+.illus-duo img{width:100%;height:280px;object-fit:cover}
+.illus-duo figcaption{padding:.8rem 1.1rem;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:#8a8172}
+.stock-note{font-size:.82rem;color:#8a8172;margin-top:1rem}
+
+/* ============================================================
+   OCT 2026 — READABILITY, CONTRAST & SINGLE-LINE BRANDING
+   - Body 17px mobile / 18px desktop; stronger weights
+   - Header brand is ONE unbreakable unit: AL-HAMZA CATERERS
+   - Darker text shades for WCAG AA; 44px touch targets
+   ============================================================ */
+
+/* ---------- Base type scale (older-adult friendly) ---------- */
+body{font-size:17px}
+@media(min-width:900px){body{font-size:18px}}
+h1,h2,h3{line-height:1.2}
+main p{overflow-wrap:break-word}
+.lead{line-height:1.75}
+.section .lead{max-width:68ch}
+
+/* ---------- Single-line brand lockup ---------- */
+.brand{gap:.65rem;min-width:0}
+.brand-text{display:flex;align-items:center;min-width:0;line-height:1}
+.brand-name{
+  font-family:var(--font-serif);
+  font-weight:700;
+  font-size:clamp(1rem,.72rem + 1.35vw,1.3rem);
+  letter-spacing:.03em;
+  white-space:nowrap;
+  word-break:keep-all;
+  line-height:1.1;
+  color:#fff;
+  transition:color .3s;
+}
+.site-header.scrolled .brand-name{color:var(--charcoal)}
+.drawer-head .brand-name{color:#16130E}
+.site-header:not(.scrolled) .brand-name{text-shadow:0 1px 10px rgba(0,0,0,.55)}
+.site-header:not(.scrolled) .nav-desktop a{text-shadow:0 1px 8px rgba(0,0,0,.5)}
+
+/* ---------- Navigation readability ---------- */
+.nav-desktop{gap:1.1rem}
+.nav-desktop a{font-size:1rem;font-weight:500;letter-spacing:.13em}
+.header-ctas{display:none;gap:.6rem}
+@media(min-width:1020px){.nav-desktop{display:flex}}
+/* Progressive CTA disclosure so brand + nav + CTAs never overlap */
+@media(min-width:1020px) and (max-width:1279.98px){.header-ctas{display:none}}
+@media(min-width:1280px){.header-ctas{display:flex}}
+@media(min-width:1280px) and (max-width:1399.98px){.header-ctas .btn-header-wa{display:none}}
+@media(min-width:1400px){.header-ctas .btn-header-wa{display:inline-flex}}
+.header-ctas .btn{padding:.8rem 1.1rem;font-size:.9rem;min-height:44px;white-space:nowrap}
+.header-ctas .btn{padding:.8rem 1.2rem;font-size:.9rem;min-height:44px;white-space:nowrap}
+
+/* ---------- Compact brand on narrow screens (stays one line) ---------- */
+@media(max-width:480px){
+  .brand{gap:.5rem}
+  .brand-mark{width:40px;height:40px;flex:0 0 40px}
+  .site-header.scrolled .brand-mark{width:38px;height:38px;flex-basis:38px}
+  .header-inner{gap:.5rem}
+  .hamburger{padding:.6rem .65rem}
+}
+
+/* ---------- Stronger, larger type ---------- */
+.card-body h3{font-size:clamp(1.35rem,1.2rem + .6vw,1.65rem);font-weight:700}
+.card-body p{font-size:1.02rem}
+.card-link{font-size:.9rem;font-weight:600;color:#7A5F1C}
+.card-link:hover{color:var(--wine)}
+.occ-body h3{font-size:clamp(1.45rem,1.3rem + .6vw,1.7rem);font-weight:700}
+.occ-body p{font-size:1rem}
+.occ-body span{font-size:.75rem}
+.eyebrow{font-size:.8rem;font-weight:600;color:#7A5F1C}
+.card-tag{color:#7A5F1C;font-size:.75rem}
+.hero p.sub{font-size:clamp(1.05rem,1rem + .8vw,1.25rem)}
+.hero-meta{font-size:.9rem;color:rgba(255,255,255,.88)}
+.breadcrumb{font-size:.8rem}
+.f-links{font-size:1rem}
+footer .f-links a[href^="tel:"]{font-size:1.2rem;font-weight:600;color:#fff}
+footer p{font-size:1rem}
+.f-bottom{font-size:.9rem;color:#B3A88F}
+.f-note{color:#B3A88F}
+.ig-handles{font-size:.9rem}
+.drawer-links a{font-size:1.5rem;padding:.7rem 0}
+.drawer-ctas .btn{min-height:48px;font-size:1rem}
+.v-cap{font-size:.85rem}
+.check-list b{font-size:1.15rem}
+.field label{font-size:.85rem}
+.menu-table th,.menu-table td{font-size:1rem}
+.map-frame + p,.stock-note{font-size:.95rem}
+
+/* ---------- Buttons: 16px+, bold, 44px targets, wrapping labels ---------- */
+.btn{font-size:1rem;font-weight:600;min-height:44px;line-height:1.4;text-align:center}
+.btn-gold{background:var(--gold);color:#241D08}
+.btn-gold:hover{background:#8A6A1F;color:#fff}
+.btn-wa{background:#157A38}
+.btn-wa:hover{background:#0F5E2C}
+.mobile-bar a{min-height:44px;font-size:.85rem;font-weight:600}
+.mobile-bar .m-quote{background:var(--gold);color:#241D08}
+.tick{color:#241D08;font-weight:700}
+
+/* ---------- Dark-section readability ---------- */
+.band-dark .lead{color:rgba(237,230,213,.88)}
+.cta-band p{color:rgba(255,243,223,.92)}
+.page-hero .sub{color:rgba(255,255,255,.92)}
+
+/* ---------- Contact details prominence ---------- */
+.f-links a[href^="mailto:"]{font-weight:500}

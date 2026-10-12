@@ -189,6 +189,43 @@
       });
     }
 
+    // Video modal (gallery films — lazy load source on open)
+    var vm = document.getElementById("videoModal");
+    var vmVideo = document.getElementById("vmVideo");
+    var vmCap = document.getElementById("vmCap");
+    function openVideo(src, poster, title) {
+      if (!vm || !vmVideo) return;
+      vmVideo.poster = poster || "";
+      vmVideo.src = src;
+      vmVideo.setAttribute("aria-label", title || "Al-Hamza Caterers event film");
+      if (vmCap) vmCap.textContent = title || "";
+      vm.classList.add("open");
+      vm.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      var pr = vmVideo.play();
+      if (pr && pr.catch) pr.catch(function () {});
+    }
+    function closeVideo() {
+      if (!vm || !vmVideo) return;
+      try { vmVideo.pause(); } catch (e) {}
+      vmVideo.removeAttribute("src");
+      vmVideo.load();
+      vm.classList.remove("open");
+      vm.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+    document.querySelectorAll(".v-card").forEach(function (card) {
+      card.addEventListener("click", function () {
+        openVideo(card.getAttribute("data-video"), card.getAttribute("data-poster"), card.getAttribute("data-title"));
+      });
+    });
+    if (vm) {
+      var vmClose = vm.querySelector("[data-vm-close]");
+      if (vmClose) vmClose.addEventListener("click", closeVideo);
+      vm.addEventListener("click", function (e) { if (e.target === vm) closeVideo(); });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeVideo(); });
+    }
+
     // Footer year
     var y = document.getElementById("year");
     if (y) y.textContent = new Date().getFullYear();
