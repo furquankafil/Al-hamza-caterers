@@ -128,14 +128,41 @@
       lb.addEventListener("click", function (e) { if (e.target === lb) closeLightbox(); });
     }
 
-    // Enquiry form -> WhatsApp
+    // Enquiry form -> Web3Forms (primary submission; no WhatsApp redirect)
     var form = document.getElementById("enquiryForm");
     if (form) {
+      var WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
+      var WEB3FORMS_KEY = "21253ec8-73e7-43bc-8e51-57510aaa8d33";
+      var WEB3FORMS_SUBJECT = "New Catering Enquiry \u2014 Al-Hamza Caterers";
+      var submitBtn = document.getElementById("enquirySubmit") || form.querySelector('[type="submit"]');
+      var originalBtnLabel = submitBtn ? submitBtn.textContent : "Send Enquiry";
+
+      function showNote(message, isSuccess) {
+        var note = document.getElementById("formNote");
+        if (!note) return;
+        note.hidden = false;
+        note.textContent = message;
+        note.classList.toggle("form-note-success", !!isSuccess);
+        note.classList.toggle("form-note-error", !isSuccess);
+        try { note.focus({ preventScroll: false }); } catch (e) { note.focus(); }
+      }
+
+      function hideNote() {
+        var note = document.getElementById("formNote");
+        if (!note) return;
+        note.hidden = true;
+        note.textContent = "";
+        note.classList.remove("form-note-success", "form-note-error");
+      }
+
       form.addEventListener("submit", function (e) {
         e.preventDefault();
+        hideNote();
         var get = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ""; };
+        var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         var fields = [
           { id: "fName", test: function (v) { return v.length >= 2; }, msg: "Please enter your name." },
+          { id: "fEmail", test: function (v) { return emailRe.test(v); }, msg: "Please enter a valid email address." },
           { id: "fPhone", test: function (v) { return /^[+\d][\d\s-]{7,15}$/.test(v); }, msg: "Please enter a valid phone number." },
           { id: "fEvent", test: function (v) { return v.length > 0; }, msg: "Please select an event type." },
           { id: "fDate", test: function (v) { return v.length > 0; }, msg: "Please choose an event date." },
@@ -155,30 +182,67 @@
         });
         if (!ok) { if (firstBad) firstBad.focus(); return; }
 
-        var lines = [
-          "Hello Al-Hamza Caterers,",
-          "",
-          "I would like to enquire about catering.",
-          "",
-          "Name: " + get("fName"),
-          "Phone: " + get("fPhone"),
-          "Event: " + get("fEvent"),
-          "Date: " + get("fDate"),
-          "Guests: " + get("fGuests"),
-          "Location: " + (get("fLocation") || "-"),
-          "",
-          "Requirement:",
-          get("fMessage") || "-",
-          "",
-          "Please share the catering options and quotation."
-        ];
-        window.open(waLink(lines.join("\n")), "_blank", "noopener");
-        var done = document.getElementById("formNote");
-        if (done) {
-          done.hidden = false;
-          done.textContent = "Thank you, " + get("fName") + ". WhatsApp should now open with your enquiry — just press send. We will respond shortly.";
-          done.focus();
+        var nameVal = get("fName");
+        var emailVal = get("fEmail");
+        var phoneVal = get("fPhone");
+        var eventVal = get("fEvent");
+        var dateVal = get("fDate");
+        var guestsVal = get("fGuests");
+        var locationVal = get("fLocation");
+        var messageVal = get("fMessage");
+        var botEl = document.getElementById("botcheck");
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.setAttribute("aria-disabled", "true");
+          submitBtn.textContent = "Sending Enquiry...";
         }
+
+        var payload = {
+          access_key: WEB3FORMS_KEY,
+          subject: WEB3FORMS_SUBJECT,
+          from_name: nameVal,
+          reply_to: emailVal,
+          name: nameVal,
+          email: emailVal,
+          phone: phoneVal,
+          event_type: eventVal,
+          event_date: dateVal,
+          guest_count: guestsVal,
+          event_location: locationVal || "-",
+          message: messageVal || "-",
+          botcheck: botEl && botEl.checked ? true : false
+        };
+
+        fetch(WEB3FORMS_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload)
+        }).then(function (res) {
+          return res.json().then(function (data) {
+            return { httpOk: res.ok, data: data };
+          }).catch(function () {
+            return { httpOk: res.ok, data: null };
+          });
+        }).then(function (out) {
+          var success = !!(out && out.httpOk && out.data && out.data.success === true);
+          if (success) {
+            showNote("Thank you! Your catering enquiry has been submitted successfully. Our team will review your enquiry.", true);
+            form.reset();
+            form.querySelectorAll(".field.invalid").forEach(function (w) { w.classList.remove("invalid"); });
+          } else {
+            var apiMsg = out && out.data && out.data.message ? out.data.message : "";
+            showNote("Sorry, we could not send your enquiry" + (apiMsg ? ": " + apiMsg : ".") + " Please check your connection and try again, or contact us on WhatsApp at +91 98187 76891.", false);
+          }
+        }).catch(function () {
+          showNote("Sorry, we could not send your enquiry due to a network error. Please check your connection and try again, or contact us on WhatsApp at +91 98187 76891.", false);
+        }).then(function () {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.removeAttribute("aria-disabled");
+            submitBtn.textContent = originalBtnLabel;
+          }
+        });
       });
       // live clear
       form.querySelectorAll("input,select,textarea").forEach(function (el) {

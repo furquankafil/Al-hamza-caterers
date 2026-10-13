@@ -513,3 +513,10 @@ footer p{font-size:1rem}
 
 /* ---------- Contact details prominence ---------- */
 .f-links a[href^="mailto:"]{font-weight:500}
+
+/* ---------- Web3Forms enquiry status + honeypot (Oct 2026, preserves premium design) ---------- */
+.hp-honeypot{position:absolute!important;left:-9999px!important;top:auto!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+.form-note{font-size:.95rem;line-height:1.6}
+.form-note-success{background:#EFF9F1;border:1px solid #BDE5C8;color:#14532D}
+.form-note-error{background:#FEF2F2;border:1px solid #FECACA;color:#7F1D1D}
+#enquirySubmit[disabled]{opacity:.7;cursor:wait;transform:none}
