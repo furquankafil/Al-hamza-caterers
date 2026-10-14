@@ -366,9 +366,10 @@ body.has-mobile-bar main{padding-bottom:0}
 @media(min-width:760px){.v-grid-3{grid-template-columns:repeat(3,1fr)}}
 .v-card{background:#fff;border:1px solid var(--line-soft);border-radius:12px;overflow:hidden;cursor:pointer;padding:0;font:inherit;color:inherit;text-align:left;transition:transform .35s ease,box-shadow .35s ease;display:flex;flex-direction:column}
 .v-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-md)}
-.v-thumb{position:relative;display:block;aspect-ratio:4/4.4;overflow:hidden;background:#14100a}
-.v-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.v-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;background:rgba(193,154,61,.94);box-shadow:0 10px 30px rgba(0,0,0,.4);transition:transform .3s}
+.v-thumb{position:relative;display:block;width:100%;aspect-ratio:4/4.4;min-height:180px;overflow:hidden;background:#14100a}
+.v-thumb img{width:100%;height:100%;object-fit:cover;display:block;background:#14100a}
+.v-thumb::before{content:"";position:absolute;inset:0;background:radial-gradient(62% 62% at 50% 50%,rgba(0,0,0,.42),transparent 72%);pointer-events:none;z-index:1}
+.v-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;background:rgba(193,154,61,.94);border:2px solid rgba(255,255,255,.9);box-shadow:0 10px 30px rgba(0,0,0,.45);transition:transform .3s;z-index:2}
 .v-play::after{content:"";position:absolute;top:50%;left:54%;transform:translate(-50%,-50%);border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent}
 .v-card:hover .v-play{transform:translate(-50%,-50%) scale(1.1)}
 .v-cap{display:block;padding:.8rem 1rem;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:#5b5347}
@@ -516,11 +517,15 @@ footer p{font-size:1rem}
 
 /* ============================================================
    OCT 2026 — GALLERY SPEED: offscreen rendering + Load More
-   - content-visibility skips rendering of below-fold cards
+   - content-visibility skips rendering of below-fold PHOTO cards
      until scrolled near (no visual change, same layout)
+   - NOTE (gallery video fix): content-visibility is intentionally NOT
+     applied to .v-card. Combined with the .reveal fade + lazy images it
+     left the 58-film grid blank on mobile, so film cards render normally.
    - Load More progressive reveal keeps initial DOM work small
    ============================================================ */
-.g-item,.v-card{content-visibility:auto;contain-intrinsic-size:auto 340px}
+.g-item{content-visibility:auto;contain-intrinsic-size:auto 340px}
+.v-grid .v-card{content-visibility:visible}
 .load-more-wrap{text-align:center;margin-top:1.6rem;display:grid;gap:.7rem;justify-items:center}
 .load-more-wrap[hidden]{display:none}
 .load-more-note{font-size:.85rem;color:#6b6257;margin:0}

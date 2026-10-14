@@ -45,18 +45,43 @@
       if (e.key === "Escape") { closeDrawer(); closeLightbox(); }
     });
 
-    // Reveal on scroll
+    // Reveal on scroll.
+    // NOTE (gallery video fix, Oct 2026): never use a fractional threshold
+    // here. Tall sections such as the 58-film .v-grid (~7000px on mobile)
+    // can never reach e.g. 12% visibility inside an ~844px viewport, so the
+    // observer never fired and the whole film grid stayed stuck at
+    // opacity:0 on mobile. threshold:0 fires on first pixel instead.
     var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var els = document.querySelectorAll(".reveal");
+    var revealEls = document.querySelectorAll(".reveal");
+    function revealEl(el, io) {
+      el.classList.add("in");
+      if (io) { try { io.unobserve(el); } catch (e) {} }
+    }
     if (reduced || !("IntersectionObserver" in window)) {
-      els.forEach(function (el) { el.classList.add("in"); });
+      revealEls.forEach(function (el) { el.classList.add("in"); });
     } else {
       var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (en) {
-          if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+          if (en.isIntersecting) { revealEl(en.target, io); }
         });
-      }, { threshold: 0.12 });
-      els.forEach(function (el) { io.observe(el); });
+      }, { threshold: 0, rootMargin: "0px 0px 25% 0px" });
+      revealEls.forEach(function (el) { io.observe(el); });
+      // Safety net: reveal anything at/near the viewport on scroll/resize,
+      // so content can never be left invisible if a ratio is never reached.
+      var revealSafety = function () {
+        revealEls.forEach(function (el) {
+          if (el.classList.contains("in")) return;
+          var r = el.getBoundingClientRect();
+          if (r.top < window.innerHeight * 1.25 && r.bottom > -200) revealEl(el, io);
+        });
+      };
+      window.addEventListener("scroll", revealSafety, { passive: true });
+      window.addEventListener("resize", revealSafety);
+      if ("requestIdleCallback" in window) {
+        window.requestIdleCallback(function () { revealSafety(); setTimeout(revealSafety, 2500); });
+      } else {
+        setTimeout(revealSafety, 1200);
+      }
     }
 
     // Wire generic WhatsApp buttons with data-wa attribute
@@ -287,6 +312,22 @@
         });
       });
     }
+
+    // Video poster fallback (gallery films): if a thumbnail image fails
+    // to load, swap in a known-good local catering photo so the card keeps
+    // a visible thumbnail + play button instead of rendering blank.
+    // The original videos are never touched; only the <img> poster swaps.
+    var VIDEO_POSTER_FALLBACK = "images/WhatsApp Image 2026-10-12 at 2.22.01 AM.jpeg";
+    document.querySelectorAll(".v-thumb img").forEach(function (img) {
+      var swapPoster = function () {
+        if (img.getAttribute("data-fb") === "1") return;
+        img.setAttribute("data-fb", "1");
+        img.removeAttribute("srcset");
+        img.src = VIDEO_POSTER_FALLBACK;
+      };
+      img.addEventListener("error", swapPoster);
+      if (img.complete && img.naturalWidth === 0 && img.getAttribute("src")) swapPoster();
+    });
 
     // Video modal (gallery films — lazy load source on open)
     var vm = document.getElementById("videoModal");
