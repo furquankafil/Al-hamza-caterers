@@ -514,6 +514,18 @@ footer p{font-size:1rem}
 /* ---------- Contact details prominence ---------- */
 .f-links a[href^="mailto:"]{font-weight:500}
 
+/* ============================================================
+   OCT 2026 — GALLERY SPEED: offscreen rendering + Load More
+   - content-visibility skips rendering of below-fold cards
+     until scrolled near (no visual change, same layout)
+   - Load More progressive reveal keeps initial DOM work small
+   ============================================================ */
+.g-item,.v-card{content-visibility:auto;contain-intrinsic-size:auto 340px}
+.load-more-wrap{text-align:center;margin-top:1.6rem;display:grid;gap:.7rem;justify-items:center}
+.load-more-wrap[hidden]{display:none}
+.load-more-note{font-size:.85rem;color:#6b6257;margin:0}
+#loadMoreCount{font-weight:600}
+
 /* ---------- Web3Forms enquiry status + honeypot (Oct 2026, preserves premium design) ---------- */
 .hp-honeypot{position:absolute!important;left:-9999px!important;top:auto!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
 .form-note{font-size:.95rem;line-height:1.6}
